@@ -11,6 +11,7 @@ import io.qameta.allure.restassured.AllureRestAssured;
 import io.restassured.RestAssured;
 import io.restassured.response.Response;
 import org.junit.Assert;
+import org.openqa.selenium.NoSuchElementException;
 
 import java.util.Comparator;
 import java.util.List;
@@ -107,16 +108,38 @@ public class BaseStepsUI extends BaseTestSingleUI {
         reservationPageObject.clickNewReservation();
         assertEquals(true, reservationPageObject.isPresentModalDialog());
         reservationPageObject.sendKeysPlateInput(reservation.getPlate());
-        reservationPageObject.sendKeysInputDate(reservation.getScheduleDay());
-        reservationPageObject.selectDate(reservation.getSchedule());
-        reservationPageObject.selectLocation(reservation.getLocation());
-        reservationPageObject.clickSaveReservationButton();
+        String[] date = reservation.getScheduleDay().split("-");
+        String dateFormatDDMMAAAA = String.format("%s/%s/%s", date[2], date[1], date[0]);
+        reservationPageObject.sendKeysInputDate(dateFormatDDMMAAAA);
+        reservationPageObject.selectDate(translate(reservation.getSchedule()));
+        //reservationPageObject.selectLocation(reservation.getLocation());
+        //reservationPageObject.clickSaveReservationButton();
     }
 
-    @Step("Then validate alert message  '{0}'")
-    public void checkMessageAlertOnReservationView(String alertMessage) {
+    @Step("Then check is not present the element into dropdown list '{0}'")
+    public void checkMessageAlertOnReservationView(String location) {
         ReservationPageObject reservationPageObject = new ReservationPageObject(getWebDriverManager());
-        String messageFromAlert = reservationPageObject.getAlertMessage();
-        checkText(alertMessage, messageFromAlert);
+        softAssertions.assertThatExceptionOfType(NoSuchElementException.class)
+                .as("This should produce a NoSuchElementException")
+                .isThrownBy(() -> reservationPageObject.selectLocation(location));
+    }
+
+    protected String translate(String value) {
+        switch (value.toLowerCase()) {
+            case "mañana":
+                return "morning";
+            case "tarde":
+                return "afternoon";
+            case "día completo":
+                return "day";
+            case "afternoon":
+                return "Tarde";
+            case "morning":
+                return "Mañana";
+            case "day":
+                return "Día completo";
+            default:
+                return "undefined";
+        }
     }
 }

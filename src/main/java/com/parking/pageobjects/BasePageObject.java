@@ -68,4 +68,12 @@ public abstract class BasePageObject {
         webDriverManager.getWebDriver().switchTo().alert().accept();
         return text;
     }
+
+    public void waitSeconds(int timeInSeconds) {
+        try {
+            Thread.sleep(1000 * timeInSeconds);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }

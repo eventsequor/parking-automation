@@ -50,17 +50,11 @@ public class ReservationIntegrationTests extends BaseStepsUI {
     @DisplayName("Create reservation")
     @MethodSource("reservationPlateList")
     @Description("This test has the target of check the values in the screen are the same against the database")
-    public void createReservationFailed(String plate) {
+    public void createReservationFailed(Reservation reservation) {
         // Given
         navigateTo(PagesLinks.RESERVATION);
 
         // When
-        Reservation reservation = Reservation.builder()
-                .plate(plate)
-                .scheduleDay("04/11/2023")
-                .location("Bloque A 2")
-                .schedule("Tarde")
-                .build();
         createReservation(reservation);
 
         // Then
@@ -69,7 +63,7 @@ public class ReservationIntegrationTests extends BaseStepsUI {
 
     public static Stream<Object> reservationPlateList() {
         List<Arguments> argumentsList = new ArrayList<>();
-        ReservationDBInfo.getReservatedPlatesList().forEach(
+        ReservationDBInfo.getListReservation().forEach(
                 s -> argumentsList.add(Arguments.of(s))
         );
         return Stream.of(argumentsList.toArray(new Arguments[0]));

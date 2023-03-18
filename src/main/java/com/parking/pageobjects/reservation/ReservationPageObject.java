@@ -6,6 +6,7 @@ import com.parking.models.reservations.viewmodel.Reservation;
 import com.parking.pageobjects.BasePageObject;
 import io.qameta.allure.Step;
 import org.openqa.selenium.By;
+import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
@@ -114,7 +115,7 @@ public class ReservationPageObject extends BasePageObject {
                 .collect(Collectors.toList());
     }
 
-    private String translate(String value) {
+    protected String translate(String value) {
         switch (value.toLowerCase()) {
             case "mañana":
                 return "morning";
@@ -122,6 +123,12 @@ public class ReservationPageObject extends BasePageObject {
                 return "afternoon";
             case "día completo":
                 return "day";
+            case "afternoon":
+                return "tarde";
+            case "morning":
+                return "mañana";
+            case "day":
+                return "día completo";
             default:
                 return "undefined";
         }
@@ -129,7 +136,16 @@ public class ReservationPageObject extends BasePageObject {
 
     @Step("Click on reservation button")
     public void clickNewReservation() {
-        click(newReservationButton);
+        waitSeconds(5);
+        try {
+            click(newReservationButton);
+            if (!isPresentModalDialog()) {
+                click(newReservationButton);
+            }
+        } catch (NoSuchElementException e) {
+            waitSeconds(4);
+            click(newReservationButton);
+        }
     }
 
     @Step("Is present modal dialog")
