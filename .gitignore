@@ -1,0 +1,7 @@
+# Folder
+allure-results/
+target/
+
+# Intellij IDEA Files
+.idea/
+*.iml
